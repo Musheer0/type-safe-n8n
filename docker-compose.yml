@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:15  # pinned version for stability
+    container_name: postgres_db
+
+    environment:
+      # local testing db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+
+    ports:
+      - "5432:5432"  # host:container
+
+    volumes:
+      - db_data:/var/lib/postgresql/data  # persistent storage
+
+volumes:
+  db_data:
