@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model Workflow {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  user_id     String
+  is_public   Boolean  @default(false)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  nodes      Nodes[]
+  executionLogs ExecutionLog[]
+}
+enum NodeType {
+  EMAIL
+  HTTP
+  WEBHOOK
+  MANUAL_TRIGGER
+}
+
+enum NodeRole {
+  TRIGGER
+  EXECUTOR
+}
+
+model Nodes {
+  id                String   @id @default(uuid())
+  workflow_id       String
+  name              String
+
+  type              NodeType   // what it does
+  role              NodeRole   // trigger or executor
+
+  data              Json
+  data_type         String  @default("any")// TS interface name or schema reference
+
+  previous_node_id  String? 
+  next_node_id      String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  Workflow          Workflow @relation(fields: [workflow_id], references: [id])
+
+}
+
+//users can save node templates for reuse across workflows
+model NodeTemplate {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  type        NodeType
+  role        NodeRole
+  data_type   String  @default("any")// TS interface name or schema reference
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ExecutionLog {
+  id          String   @id @default(uuid())
+  workflow_id String
+  node_id     String
+  status      String
+  input       Json
+  output      Json
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  Workflow    Workflow @relation(fields: [workflow_id], references: [id])
+}
