@@ -5,12 +5,7 @@ import React from 'react'
 
 const pages = () => {
   return (
-    <div>
-      <CreateWorkflowButton loading={<Button>Loading</Button>}>
-        <Button>New Workflow</Button>
-      </CreateWorkflowButton>
       <WorkflowsList/>
-    </div>
   )
 }
 
