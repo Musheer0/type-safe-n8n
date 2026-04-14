@@ -1,19 +1,28 @@
 name: build project
 
 on:
-    pull_request:
-        branches: [" main "]
+  pull_request:
+    branches: ["main"]
+
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v2
-              name: clone-repo
-            - name: setup-node
-              uses: actions/setup-node@v2
-            - name: install pnpm
-              run: npm install -g pnpm
-            - name: install dependencies
-              run: pnpm install
-            - name: build project
-              run: pnpm build
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build project
+        run: pnpm build
