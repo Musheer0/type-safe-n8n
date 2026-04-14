@@ -19,6 +19,7 @@ export const useWorkflows = () => {
       {},
       {
         getNextPageParam: (lastPage) => lastPage.cursor ?? undefined,
+        retry:false
       }
     )
   )
