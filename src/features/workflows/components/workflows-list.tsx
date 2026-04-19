@@ -58,7 +58,7 @@ const WorkflowsList = () => {
 
   const hasNoWorkflows = workflows.length === 0;
   const hasNoResults = workflows.length > 0 && filtered.length === 0;
-
+  if(isLoading) return <>Loading</>
   return (
     <TooltipProvider>
       <div className="flex flex-col gap-5 sm:p-6 p-2">
@@ -71,8 +71,8 @@ const WorkflowsList = () => {
               : `${filtered.length} workflow${filtered.length !== 1 ? "s" : ""} found`}
           </p>
         )}
-
-        {(hasNoWorkflows || hasNoResults && workflows===undefined) ? (
+        
+        {(hasNoWorkflows || hasNoResults ) ? (
           <WorkflowsListEmpty
             hasWorkflows={!hasNoWorkflows}
             search={search}

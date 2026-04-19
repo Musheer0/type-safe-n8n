@@ -1,8 +1,15 @@
+import WorkflowPageHeader from '@/features/workflows/components/workflow-page-header'
+import WorkflowProvider from '@/features/workflows/components/workflow-provider'
 import React from 'react'
 
-const page = () => {
+const page = async({params}:{params:Promise<{id:string}>}) => {
+  const {id} = await params
   return (
-    <div>page</div>
+    <WorkflowProvider id={id}>
+      <>
+      <WorkflowPageHeader/>
+      </>
+    </WorkflowProvider>
   )
 }
 

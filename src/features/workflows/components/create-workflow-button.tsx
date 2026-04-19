@@ -1,81 +1,70 @@
-"use client"
+"use client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import type React from "react";
+import { useState } from "react";
+import { toast } from "sonner";
 import {
   AlertDialog,
-  AlertDialogTrigger,
+  AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogFooter,
-  AlertDialogCancel,
-} from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
-import { useTRPC } from '@/trpc/client'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import React, { useState } from 'react'
-import { toast } from 'sonner'
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useTRPC } from "@/trpc/client";
 
-const   CreateWorkflowButton = ({
+const CreateWorkflowButton = ({
   children,
   loading,
 }: {
-  children: React.ReactNode
-  loading: React.ReactNode
+  children: React.ReactNode;
+  loading: React.ReactNode;
 }) => {
-  const trpc = useTRPC()
-  const queryClient = useQueryClient()
-  const [open, setOpen] = useState(false)
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
 
   const { mutate, isPending } = useMutation(
     trpc.workflows.create.mutationOptions({
       onError: (error) => {
-        toast.error(error.message)
+        toast.error(error.message);
       },
-      onMutate:()=>{
-        toast.loading('creating workflow')
+      onMutate: () => {
+        toast.loading("creating workflow");
       },
       onSuccess: (newWorkflow) => {
-        toast.dismiss()
-        toast.success('Created workflow')
+        toast.dismiss();
+        toast.success("Created workflow");
 
-        // Update the React Query cache for the getAll query
-        // The getAll query key from tRPC
-        queryClient.setQueriesData(
-          trpc.workflows.getAll.queryFilter(),
-          (oldData: { pages: { cursor: string | null; workflows: typeof newWorkflow[] }[] } | undefined) => {
-            if (!oldData) return oldData
-            return {
-              ...oldData,
-              pages: oldData.pages.map((page, index) => {
-                // Prepend to the first page
-                if (index === 0) {
-                  return {
-                    ...page,
-                    workflows: [newWorkflow, ...page.workflows],
-                  }
-                }
-                return page
-              }),
-            }
-          }
-        )
-        setOpen(false)
-        setTitle('')
-        setDescription('')
+        queryClient.invalidateQueries({
+          queryKey: trpc.workflows.getAll.queryKey(),
+        });
+        router.push(`/workflows/${newWorkflow.id}`);
+        setOpen(false);
+        setTitle("");
+        setDescription("");
       },
-    })
-  )
+    }),
+  );
 
   const handleSubmit = () => {
-    mutate({ title: title || undefined, description: description || undefined })
-  }
+    mutate({
+      title: title || undefined,
+      description: description || undefined,
+    });
+  };
 
-  if (isPending) return loading
+  if (isPending) return loading;
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -96,12 +85,12 @@ const   CreateWorkflowButton = ({
               placeholder="Untitled workflow"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
             />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="workflow-description">
-              Description{' '}
+              Description{" "}
               <span className="text-muted-foreground text-xs">(optional)</span>
             </Label>
             <Textarea
@@ -117,12 +106,12 @@ const   CreateWorkflowButton = ({
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
           <Button onClick={handleSubmit} disabled={isPending}>
-            {isPending ? 'Creating...' : 'Create'}
+            {isPending ? "Creating..." : "Create"}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
-}
+  );
+};
 
-export default CreateWorkflowButton
+export default CreateWorkflowButton;

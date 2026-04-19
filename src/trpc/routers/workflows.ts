@@ -43,7 +43,7 @@ export const WorkflowsRoute = createTRPCRouter({
         },
         take:11,
         orderBy:{
-            createdAt:"asc"
+            createdAt:"desc"
         }
       });
       const cursor = workflows.length>10 ? workflows[10].id:null

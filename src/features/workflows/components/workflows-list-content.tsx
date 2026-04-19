@@ -4,9 +4,7 @@ import {
   useWorkflowsListStore,
   type WorkflowItem,
 } from "@/features/workflows/store";
-import { WorkflowCard } from "./workflows-list-card";
 import { WorkflowRow } from "./workflows-list-row";
-import { SkeletonCard, SkeletonRow } from "./workflows-list-skeletons";
 
 interface WorkflowsListContentProps {
   workflows: WorkflowItem[];
@@ -17,7 +15,7 @@ export const WorkflowsListContent = ({
   workflows,
   isLoading,
 }: WorkflowsListContentProps) => {
-  const { view, search, clearSearch } = useWorkflowsListStore();
+  const { search } = useWorkflowsListStore();
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -31,19 +29,18 @@ export const WorkflowsListContent = ({
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="flex flex-col gap-2">
         {Array.from({ length: 6 }).map((_, i) => (
-          <SkeletonCard key={i} />
-        ))}
-      </div>
-    );
-  }
-
-  if (view === "grid") {
-    return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((workflow, i) => (
-          <WorkflowCard key={workflow.id} workflow={workflow} index={i} />
+          <div
+            key={i}
+            className="flex items-center gap-4 rounded-lg border bg-card px-4 py-3"
+          >
+            <div className="h-8 w-8 shrink-0 rounded-lg bg-muted animate-pulse" />
+            <div className="flex flex-1 flex-col gap-1">
+              <div className="h-4 w-24 rounded bg-muted animate-pulse" />
+              <div className="h-3 w-32 rounded bg-muted animate-pulse" />
+            </div>
+          </div>
         ))}
       </div>
     );

@@ -1,4 +1,3 @@
-import Navbar from '@/features/dashboard/components/navbar';
 import { TRPCReactProvider } from '@/trpc/client';
 import { ClerkProvider } from '@clerk/nextjs'
 
@@ -9,7 +8,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
  <ClerkProvider>
        <TRPCReactProvider>
-        <Navbar/>
         <Toaster/>
         {children}
     </TRPCReactProvider>

@@ -10,18 +10,12 @@ import {
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Toggle } from "@/components/ui/toggle";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
 import { useWorkflowsListStore } from "@/features/workflows/store";
 import CreateWorkflowButton from "./create-workflow-button";
 
 export const WorkflowsListHeader = () => {
-  const { view, search, setView, setSearch, clearSearch } =
+  const {search,setSearch, clearSearch } =
     useWorkflowsListStore();
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -51,35 +45,7 @@ export const WorkflowsListHeader = () => {
         )}
       </div>
 
-      <div className="flex items-center rounded-lg border bg-background p-1 gap-0.5">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Toggle
-              size="sm"
-              pressed={view === "grid"}
-              onPressedChange={() => setView("grid")}
-              className="h-8 w-8 p-0 rounded-lg data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-            >
-              <LayoutGrid className="h-4 w-4" />
-            </Toggle>
-          </TooltipTrigger>
-          <TooltipContent>Grid view</TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Toggle
-              size="sm"
-              pressed={view === "list"}
-              onPressedChange={() => setView("list")}
-              className="h-8 w-8 p-0 rounded-lg data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-            >
-              <List className="h-4 w-4" />
-            </Toggle>
-          </TooltipTrigger>
-          <TooltipContent>List view</TooltipContent>
-        </Tooltip>
-      </div>
+     
       <CreateWorkflowButton
         loading={
           <Button disabled size={"lg"} className="rounded-lg">
