@@ -31,6 +31,7 @@ enum NodeType {
   HTTP
   WEBHOOK
   MANUAL_TRIGGER
+  SEND_DISCORD_MSG
 }
 
 enum NodeRole {

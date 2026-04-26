@@ -13,7 +13,10 @@ const WorkflowProvider = ({id,children}:{id:string,children:React.ReactNode}) =>
   if(isPending) return <>Loading</>
   return (
     <context.Provider value={data}>
-        {children}
+      <section className="
+      flex flex-col w-full h-screen">
+          {children}
+      </section>
     </context.Provider>
   )
 }
