@@ -49,7 +49,7 @@ const makeNodeData = (name: string): NodeData => ({
   _internal_edgeIds: [],
   _internal_position:{x:50, y:0}
 });
-
+ 
 /** Update a single node inside the array immutably. */
 const patchNode = (
   nodes: Node<NodeData>[],

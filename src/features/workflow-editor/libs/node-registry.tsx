@@ -1,6 +1,7 @@
 import { NodeType } from "@/generated/prisma/enums"
 import { GlobeIcon, LucideIcon, MouseIcon, WebhookIcon } from "lucide-react"
 import React from "react"
+import WebhookForm from "../components/nodes/forms/webhook-form"
 
 export type NodeAction = (args: {
   data: object
@@ -13,7 +14,6 @@ export type NodeUiData = {
     description?:string,
     type:nodeType
 }
-
 
 export type Nodes  = Record<NodeType,React.ReactNode>
 export const nodeUIRegistry: Record<NodeType, NodeUiData> = {
@@ -39,6 +39,12 @@ export const nodeUIRegistry: Record<NodeType, NodeUiData> = {
         logo:WebhookIcon,
         name:"Webhook Trigger",
         description:" trigger a workflow over a webhook request",
+        type:"trigger"
+    },
+    "SEND_DISCORD_MSG":{
+        logo:"/nodes/discord.svg",
+        name:"Send a discord message",
+        description:" send a discord message",
         type:"executor"
     }
 }

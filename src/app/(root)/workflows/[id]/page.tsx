@@ -5,11 +5,12 @@ import React from 'react'
 
 const page = async({params}:{params:Promise<{id:string}>}) => {
   const {id} = await params
+
   return (
     <WorkflowProvider id={id}>
       <>
       <WorkflowPageHeader/>
-      <Editor/>
+      <Editor id={id}/>
       </>
     </WorkflowProvider>
   )

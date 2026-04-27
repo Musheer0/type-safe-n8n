@@ -2,8 +2,11 @@ import { BaseHandle } from "@/components/base-handle";
 import { NodeType } from "@/generated/prisma/enums";
 import { cn } from "@/lib/utils";
 import { Position } from "@xyflow/react";
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, SettingsIcon } from "lucide-react";
 import { memo, ReactNode } from "react";
+import NodeDataForm, { nodedataformprops } from "./node-data-dialog";
+import { Button } from "@/components/ui/button";
+import { useWorkflow } from "@/features/workflows/hooks/use-workflows";
 
 type BaseExecutionNodeProps = {
   className?: string;
@@ -12,10 +15,18 @@ type BaseExecutionNodeProps = {
     label?: string;
     icon?: LucideIcon|string; // lucide icon OR custom component
   };
+  form:{
+        title:string,
+        description?:string,
+        form:React.ReactNode,
+        onSave:()=>void,
+        isSaving?:boolean
+  }
 };
 
 export const BaseExecutionNode = memo(
-  ({ className, data, type }: BaseExecutionNodeProps) => {
+  ({ className, data, type,form }: BaseExecutionNodeProps) => {
+    
     return (
       <div
         className={cn(
@@ -26,6 +37,15 @@ export const BaseExecutionNode = memo(
           className
         )}
       >
+        <NodeDataForm
+        title={form.title}
+        description={form.description}
+        form={form.form}
+        isSaving={form.isSaving}
+        onSave={form.onSave}
+        >
+          <Button size={"icon"} variant={"link"} className="absolute bottom-full left-1/2 -translate-x-1/2"><SettingsIcon/></Button>
+        </NodeDataForm>
         {/* LEFT (source) */}
         <BaseHandle id="source" type="source" position={Position.Left} />
 

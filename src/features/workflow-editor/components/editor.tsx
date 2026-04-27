@@ -21,11 +21,11 @@ import { WebhookNode } from './nodes/webhook-node';
 import { DiscordNode } from './nodes/discord-node';
 import { ManualNode } from './nodes/manual-node';
 const initialNodes = [
-  { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Node 1' } ,type:"http"},
-  { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } ,type:"email"},
+  // { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Node 1' } ,type:"http"},
+  // { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } ,type:"email"},
     { id: 'n3', position: { x: 50, y: 100 }, data: { label: 'Node 2' } ,type:"webhook"},
-    { id: 'n4', position: { x: 50, y: 140 }, data: { label: 'Node 2' } ,type:"discord"},
-        { id: 'n5', position: { x: 150, y: 140 }, data: { label: 'Node 2' } ,type:"manual"},
+    // { id: 'n4', position: { x: 50, y: 140 }, data: { label: 'Node 2' } ,type:"discord"},
+    //     { id: 'n5', position: { x: 150, y: 140 }, data: { label: 'Node 2' } ,type:"manual"},
 
 
 ];
@@ -40,7 +40,7 @@ const defaultNodes = [
  
 const initialEdges = [];
  
-export default function Editor() {
+export default function Editor({id}:{id:string}) {
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
  
