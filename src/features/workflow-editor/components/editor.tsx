@@ -2,30 +2,18 @@
 import { useState, useCallback } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, Background, ControlButton, Controls,Panel } from '@xyflow/react';
  
-const nodeTypes = {
-  http:HttpNode,
-  email:EmailNode,
-  webhook:WebhookNode,
-  discord:DiscordNode,
-  manual:ManualNode
 
-  
-};
 import '@xyflow/react/dist/style.css';
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from 'lucide-react';
 import NodeSelector from './node-selector';
-import { HttpNode } from './nodes/http-node';
-import { EmailNode } from './nodes/email-node';
-import { WebhookNode } from './nodes/webhook-node';
-import { DiscordNode } from './nodes/discord-node';
-import { ManualNode } from './nodes/manual-node';
+
 const initialNodes = [
-  // { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Node 1' } ,type:"http"},
-  // { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } ,type:"email"},
-    { id: 'n3', position: { x: 50, y: 100 }, data: { label: 'Node 2' } ,type:"webhook"},
-    // { id: 'n4', position: { x: 50, y: 140 }, data: { label: 'Node 2' } ,type:"discord"},
-    //     { id: 'n5', position: { x: 150, y: 140 }, data: { label: 'Node 2' } ,type:"manual"},
+  { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Node 1' } ,type:"http"},
+  { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } ,type:"email"},
+    // { id: 'n3', position: { x: 50, y: 100 }, data: { label: 'Node 2' } ,type:"webhook"},
+    { id: 'n4', position: { x: 50, y: 140 }, data: { label: 'Node 2' } ,type:"discord"},
+        { id: 'n5', position: { x: 150, y: 140 }, data: { label: 'Node 2' } ,type:"manual"},
 
 
 ];

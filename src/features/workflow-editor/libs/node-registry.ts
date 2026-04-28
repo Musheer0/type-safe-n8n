@@ -1,8 +1,11 @@
 import { NodeType } from "@/generated/prisma/enums"
 import { GlobeIcon, LucideIcon, MouseIcon, WebhookIcon } from "lucide-react"
 import React from "react"
-import WebhookForm from "../components/nodes/forms/webhook-form"
-
+import { HttpNode } from '@/features/workflow-editor/components/nodes/http-node';
+import { EmailNode } from '@/features/workflow-editor/components/nodes/email-node';
+import { WebhookNode } from '@/features/workflow-editor/components/nodes/webhook-node';
+import { DiscordNode } from '@/features/workflow-editor/components/nodes/discord-node';
+import { ManualNode } from '@/features/workflow-editor/components/nodes/manual-node';
 export type NodeAction = (args: {
   data: object
   nodeData: object
@@ -48,6 +51,14 @@ export const nodeUIRegistry: Record<NodeType, NodeUiData> = {
         type:"executor"
     }
 }
-// export const nodeActionRegistry: Record<NodeType, NodeAction> = {
-//   EMAIL: 
-// }
+
+export const nodeTypes = {
+  http:HttpNode,
+  email:EmailNode,
+  webhook:WebhookNode,
+  discord:DiscordNode,
+  manual:ManualNode
+};
+export const nodeActionRegistry: Record<NodeType, NodeAction> = {
+  EMAIL: async()=>{}
+}

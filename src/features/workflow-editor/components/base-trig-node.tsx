@@ -14,7 +14,7 @@ type BaseExecutionNodeProps = {
     label?: string;
     icon?: LucideIcon|string; // lucide icon OR custom component
   };
-    form:{
+    form?:{
           title:string,
           description?:string,
           form:React.ReactNode,
@@ -36,6 +36,8 @@ export const BaseTriggerNode = memo(
           className
         )}
       >
+        {form &&
+        <>
           <NodeDataForm
         title={form.title}
         description={form.description}
@@ -45,6 +47,8 @@ export const BaseTriggerNode = memo(
         >
           <Button size={"icon"} variant={"link"} className="absolute bottom-full left-1/2 -translate-x-1/2"><SettingsIcon/></Button>
         </NodeDataForm>
+        </>
+        }
         {/* ICON */}
         {data.icon ? (
         <>
