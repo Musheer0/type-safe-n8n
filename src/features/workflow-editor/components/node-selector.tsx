@@ -6,6 +6,8 @@ import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { nodeUIRegistry } from '../libs/node-registry'
 import { baseInitialData } from '../types/node-data-inputs'
 import {applyNodeChanges} from '@xyflow/react'
+import { NodeType } from '@/generated/prisma/enums'
+import { useEditor } from '../stores/node-store'
 type NodeKey = keyof typeof nodeUIRegistry
 
 interface NodeSelectorProps {
@@ -20,11 +22,10 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 const CATEGORY_ORDER = ['trigger', 'executor']
 
-const handleClick = (type:keyof typeof nodeUIRegistry,data:baseInitialData)=>{
+const handleClick = (type:NodeType,)=>{
     const nodeMetadata = nodeUIRegistry[type]
     if(!nodeMetadata) return
-    const initial_data ={
-    }
+    alert(type)
 
 
 }
@@ -34,7 +35,7 @@ const NodeSelector = ({ children, onNodeSelect }: NodeSelectorProps) => {
   const [focusedIdx, setFocusedIdx] = useState(-1)
   const [open, setOpen] = useState(false)
   const searchRef = useRef<HTMLInputElement>(null)
-
+  const {addNode,nodes} = useEditor()
   useEffect(() => {
     if (open) {
       setQuery('')
@@ -50,7 +51,7 @@ const NodeSelector = ({ children, onNodeSelect }: NodeSelectorProps) => {
     })),
     []
   )
-
+ 
   const filtered = useMemo(() => {
     if (!query.trim()) return allNodes
     const q = query.toLowerCase()
@@ -79,10 +80,10 @@ const NodeSelector = ({ children, onNodeSelect }: NodeSelectorProps) => {
     [grouped]
   )
 
-  const handleSelect = useCallback((key: NodeKey) => {
-    onNodeSelect?.(key)
+  const handleSelect =(key:NodeType)=>{
+    addNode(key)
     setOpen(false)
-  }, [onNodeSelect])
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {

@@ -10,7 +10,7 @@ const page = async({params}:{params:Promise<{id:string}>}) => {
     <WorkflowProvider id={id}>
       <>
       <WorkflowPageHeader/>
-      <Editor id={id}/>
+      <Editor/>
       </>
     </WorkflowProvider>
   )

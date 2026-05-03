@@ -47,14 +47,14 @@ export const useWorkflows = () => {
 };
 export const useWorkflow = (id: string) => {
   const trpc = useTRPC();
-  return useQuery(trpc.workflows.getById.queryOptions({ id }));
+  return useQuery(trpc.workflows.getById.queryOptions({ id,data:true},{refetchOnWindowFocus:false}));
 };
 
 export const useCachedWorkflow = (id: string) => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
-  const queryKey = trpc.workflows.getById.queryKey({ id });
+  const queryKey = trpc.workflows.getById.queryKey({ id,data:true });
   const data = queryClient.getQueryData(queryKey);
 
   if (!data) return null;

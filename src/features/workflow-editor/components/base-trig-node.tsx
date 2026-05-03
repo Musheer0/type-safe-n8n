@@ -1,11 +1,12 @@
 import { BaseHandle } from "@/components/base-handle";
 import { NodeType } from "@/generated/prisma/enums";
 import { cn } from "@/lib/utils";
-import { Position } from "@xyflow/react";
-import { LucideIcon, SettingsIcon } from "lucide-react";
+import { NodeProps, Position } from "@xyflow/react";
+import { LucideIcon, SettingsIcon, TrashIcon } from "lucide-react";
 import { memo, ReactNode } from "react";
 import NodeDataForm, { nodedataformprops } from "./node-data-dialog";
 import { Button } from "@/components/ui/button";
+import { useEditor } from "../stores/node-store";
 
 type BaseExecutionNodeProps = {
   className?: string;
@@ -20,12 +21,13 @@ type BaseExecutionNodeProps = {
           form:React.ReactNode,
           onSave:()=>void,
           isSaving?:boolean
-    }
-  
+    },
+      props:NodeProps
 };
 
 export const BaseTriggerNode = memo(
-  ({ className, data, type,form }: BaseExecutionNodeProps) => {
+  ({ className, data, type,form ,props}: BaseExecutionNodeProps) => {
+    const {deleteNode} = useEditor()
     return (
       <div
         className={cn(
@@ -36,7 +38,8 @@ export const BaseTriggerNode = memo(
           className
         )}
       >
-        {form &&
+           <div className="flex  absolute bottom-full justify-center w-full py-3 left-0 items-center gap-2">
+         {form &&
         <>
           <NodeDataForm
         title={form.title}
@@ -45,10 +48,15 @@ export const BaseTriggerNode = memo(
         isSaving={false}
         onSave={()=>{}}
         >
-          <Button size={"icon"} variant={"link"} className="absolute bottom-full left-1/2 -translate-x-1/2"><SettingsIcon/></Button>
+          <Button size={"icon"} variant={"link"} className=""><SettingsIcon/></Button>
         </NodeDataForm>
         </>
         }
+        <button onClick={()=>{deleteNode(props.id)}} className="text-destructive">
+          <TrashIcon size={14}/>
+        </button>
+     </div>
+       
         {/* ICON */}
         {data.icon ? (
         <>

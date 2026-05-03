@@ -24,6 +24,7 @@ model Workflow {
   updatedAt   DateTime @updatedAt
 
   nodes      Nodes[]
+  edges     Edges[]
   executionLogs ExecutionLog[]
 }
 enum NodeType {
@@ -38,7 +39,18 @@ enum NodeRole {
   TRIGGER
   EXECUTOR
 }
+model Edges {
+    id                String   @id @default(uuid())
+  workflow_id       String
+  fromNode          String 
+  nextNode          String
 
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt @default(now())
+
+  Workflow          Workflow @relation(fields: [workflow_id], references: [id])
+
+}
 model Nodes {
   id                String   @id @default(uuid())
   workflow_id       String
@@ -46,15 +58,13 @@ model Nodes {
 
   type              NodeType   // what it does
   role              NodeRole   // trigger or executor
-
+  xCord             Float @default(50)
+  yCord             Float @default(50)
   data              Json
   data_type         String  @default("any")// TS interface name or schema reference
 
-  previous_node_id  String? 
-  next_node_id      String?
-
   createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  updatedAt         DateTime @updatedAt  @default(now())
 
   Workflow          Workflow @relation(fields: [workflow_id], references: [id])
 
@@ -70,7 +80,7 @@ model NodeTemplate {
   data_type   String  @default("any")// TS interface name or schema reference
   
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime @updatedAt @default(now())
 }
 
 model ExecutionLog {

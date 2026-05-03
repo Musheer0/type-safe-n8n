@@ -5,18 +5,31 @@ import { TRPCError } from "@trpc/server";
 import prisma from "@/db/prisma";
 import { redis } from "@/lib/redis";
 import { getWorkflowByIdKey } from "@/features/workflows/libs/redis-keys";
+import { ExtractedEdgeSchema, ExtractedNodeSchema } from "@/features/workflows/schemas/transformed-data-schema";
+import { nodeUIRegistry } from "@/features/workflow-editor/libs/node-registry";
+import { Prisma } from "@/generated/prisma/client";
 
 export const WorkflowsRoute = createTRPCRouter({
     getById: protectedProcedure.
     input(z.object({
-        id:z.string()
+        id:z.string(),
+        data:z.boolean().optional()
     }))
     .query(async({ctx,input})=>{
         const userId = ctx.auth.userId;
         const workflow = await getWorkflowById(input.id)
         if(!workflow) throw new TRPCError({code:"NOT_FOUND"})
         if(workflow.user_id!==userId) throw new TRPCError({code:"NOT_FOUND"})
-        return workflow
+        if(!input.data) return workflow
+        const nodes = await prisma.nodes.findMany({
+            where:{
+                workflow_id:workflow.id
+            }
+        })
+        const edges = await prisma.edges.findMany({where:{
+                workflow_id:workflow.id
+            }})
+        return {...workflow,nodes,edges}
     }),
 
     getAll :protectedProcedure
@@ -102,4 +115,86 @@ export const WorkflowsRoute = createTRPCRouter({
         await redis.del(getWorkflowByIdKey(input.id))
         return null
     }),
+    save:protectedProcedure
+    .input(z.object({
+        workflow_id:z.string(),
+        nodes:z.array(ExtractedNodeSchema),
+        edges:z.array(ExtractedEdgeSchema)
+    }))
+    .mutation(async({ctx,input})=>{
+        const workflow = await prisma.workflow.findFirst({
+            where:{
+                id:input.workflow_id,
+                user_id:ctx.auth.userId
+            }
+        })
+        if(!workflow) throw new TRPCError({code:"NOT_FOUND"})
+        if(input.nodes.length==0) return {success:true}
+        
+            // save nodes
+        const nodevalues = input.nodes.map((n) => {
+        const role = nodeUIRegistry[n.type].type.toUpperCase();
+        return Prisma.sql`(
+        ${n.id},
+        ${input.workflow_id},
+        ${n.name},
+        ${n.type},
+        ${role},    
+        ${n.xCord},
+        ${n.yCord},
+        ${n.data}
+        )`;});
+         //save edges
+        const edgevalues = input.edges.map((e)=>{
+            return Prisma.sql`(
+                ${e.id},
+                ${input.workflow_id},
+                ${e.fromNode},
+                ${e.nextNode}
+            )`
+        });
+
+      await prisma.$transaction(async (tx) => {
+
+  // 🧹 DELETE NODES (missing ones)
+  await tx.$executeRaw`
+    DELETE FROM "Nodes"
+    WHERE id NOT IN (${Prisma.join(input.nodes.map(n => n.id))})
+  `
+
+  // 📦 UPSERT NODES
+  await tx.$executeRaw`
+    INSERT INTO "Nodes"
+    ("id", "workflow_id", "name", "type", "role", "xCord", "yCord", "data")
+    VALUES ${Prisma.join(nodevalues)}
+    ON CONFLICT ("id")
+    DO UPDATE SET
+      "xCord" = EXCLUDED."xCord",
+      "yCord" = EXCLUDED."yCord",
+      "data" = EXCLUDED."data"
+  `
+
+  // 🔗 EDGES (only if present)
+  if (input.edges.length > 0) {
+
+    await tx.$executeRaw`
+      DELETE FROM "Edges"
+      WHERE id NOT IN (${Prisma.join(input.edges.map(e => e.id))})
+    `
+
+    await tx.$executeRaw`
+      INSERT INTO "Edges"
+      ("id", "workflow_id", "fromNode", "nextNode")
+      VALUES ${Prisma.join(edgevalues)}
+      ON CONFLICT ("id")
+      DO UPDATE SET
+        "fromNode" = EXCLUDED."fromNode",
+        "nextNode" = EXCLUDED."nextNode"
+    `
+  }
+
+})
+
+        return {success:true}
+    })
 })

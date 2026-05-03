@@ -52,13 +52,13 @@ export const nodeUIRegistry: Record<NodeType, NodeUiData> = {
     }
 }
 
-export const nodeTypes = {
-  http:HttpNode,
-  email:EmailNode,
-  webhook:WebhookNode,
-  discord:DiscordNode,
-  manual:ManualNode
+export const nodeTypes:Record<NodeType,any> = {
+  HTTP:HttpNode,
+  EMAIL:EmailNode,
+  WEBHOOK:WebhookNode,
+  SEND_DISCORD_MSG:DiscordNode,
+  MANUAL_TRIGGER:ManualNode
 };
-export const nodeActionRegistry: Record<NodeType, NodeAction> = {
-  EMAIL: async()=>{}
-}
+// export const nodeActionRegistry: Record<NodeType, NodeAction> = {
+//   EMAIL: async()=>{}
+// }

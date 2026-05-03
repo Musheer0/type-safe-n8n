@@ -1,8 +1,9 @@
 import { GlobeIcon } from "lucide-react"
 import { BaseExecutionNode } from "../base-exec-node"
 import HttpRequestForm from "./forms/http-form"
+import { NodeProps } from "@xyflow/react"
 
-export const HttpNode = ()=>{
+export const HttpNode = (props:NodeProps)=>{
 
 
     return (
@@ -18,6 +19,7 @@ export const HttpNode = ()=>{
             label: "send a http request",
             icon: GlobeIcon
         }}
+        props={props}
         />
     )
 }

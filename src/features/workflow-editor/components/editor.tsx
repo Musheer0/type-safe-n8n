@@ -1,72 +1,95 @@
-"use client"
-import { useState, useCallback } from 'react';
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, Background, ControlButton, Controls,Panel } from '@xyflow/react';
- 
+"use client";
 
-import '@xyflow/react/dist/style.css';
-import { Button } from '@/components/ui/button';
-import { PlusIcon } from 'lucide-react';
-import NodeSelector from './node-selector';
+import {
+  ReactFlow,
+  Background,
+  Controls,
+  MiniMap,
+  addEdge,
+  applyNodeChanges,
+  applyEdgeChanges,
+  Node,
+  Edge,
+  Connection,
+  NodeChange,
+  EdgeChange,
+  Panel,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 
-const initialNodes = [
-  { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Node 1' } ,type:"http"},
-  { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } ,type:"email"},
-    // { id: 'n3', position: { x: 50, y: 100 }, data: { label: 'Node 2' } ,type:"webhook"},
-    { id: 'n4', position: { x: 50, y: 140 }, data: { label: 'Node 2' } ,type:"discord"},
-        { id: 'n5', position: { x: 150, y: 140 }, data: { label: 'Node 2' } ,type:"manual"},
+import { useCallback, useEffect, useState } from "react";
+import NodeSelector from "./node-selector";
+import { PlusIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useEditor } from "../stores/node-store";
+import { nodeTypes } from "../libs/node-registry";
+import { useActiveWorkflow } from "@/features/workflows/components/workflow-provider";
+import { Edges, Nodes } from "@/generated/prisma/client";
+import { node_data } from "../types/node";
+import { transformEdges, transformNodes } from "../libs/transform-data";
+import SaveButton from "./save-button";
 
 
-];
-const defaultNodes = [
-  {
-    id: "2",
-    position: { x: 200, y: 200 },
-    data: {},
-    type: "trigger",
-  },
-];
- 
-const initialEdges = [];
- 
-export default function Editor({id}:{id:string}) {
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
- 
+export default function Editor() {
+  const data = useActiveWorkflow();
+  const { nodes, edges, setEdges, setNodes } = useEditor();
+
+  // ✅ Fix 1: Move setNodes/setEdges into useEffect to avoid infinite re-renders
+  useEffect(() => {
+    setNodes(transformNodes(data.nodes));
+    setEdges(transformEdges(data.edges, data.nodes));
+  }, [data.nodes, data.edges]);
+
   const onNodesChange = useCallback(
-    (changes) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
-    [],
+    (changes: NodeChange[]) => {
+      // ✅ Fix 2: Cast to Node[] to satisfy applyNodeChanges signature
+      const updated_nodes = applyNodeChanges(changes, nodes as Node[]);
+      setNodes(updated_nodes as Node<node_data>[]);
+    },
+    [nodes, setNodes]
   );
+
   const onEdgesChange = useCallback(
-    (changes) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
-    [],
+    (changes: EdgeChange[]) => {
+      const updated_edges = applyEdgeChanges(changes, [...edges]);
+      setEdges(updated_edges);
+    },
+    [edges, setEdges]
   );
+
   const onConnect = useCallback(
-    (params) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
-    [],
+    (connection: Connection) => {
+      const updated_edges = addEdge(connection, [...edges]);
+      setEdges(updated_edges);
+    },
+    [edges, setEdges]
   );
- 
+
   return (
-    <div className='w-full flex-1'>
+    <div style={{ width: "100%", height: "100vh" }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
-                nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         fitView
-        
+        nodeTypes={nodeTypes}
       >
-        <Controls showZoom/>
-        <Background/>
-        <Panel position='top-right'>
+        <Controls showZoom />
+        <Background />
+        <Panel position="top-right">
           <NodeSelector>
-              <Button className='rounded-lg' size={"lg"}>
-                <PlusIcon/>Add Node
+            <Button className="rounded-lg" size={"lg"}>
+              <PlusIcon /> Add Node
             </Button>
           </NodeSelector>
         </Panel>
-        </ReactFlow>
+        <Panel position="bottom-center">
+          <SaveButton/>
+        </Panel>
+        <MiniMap />
+      </ReactFlow>
     </div>
   );
 }

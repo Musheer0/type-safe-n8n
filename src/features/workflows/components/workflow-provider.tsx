@@ -1,9 +1,9 @@
 "use client"
 
-import { Workflow } from "@/generated/prisma/client"
+import { Edges, Nodes, Workflow } from "@/generated/prisma/client"
 import { createContext, useContext } from "react"
 
-const context = createContext<Workflow|null|undefined>(null)
+const context = createContext<Workflow & {nodes:Nodes[],edges:Edges[]}|null|undefined>(null)
 
 import React from 'react'
 import { useWorkflow } from "../hooks/use-workflows"
@@ -12,6 +12,7 @@ const WorkflowProvider = ({id,children}:{id:string,children:React.ReactNode}) =>
    const {data,isPending} = useWorkflow(id)
   if(isPending) return <>Loading</>
   return (
+    //@ts-ignore
     <context.Provider value={data}>
       <section className="
       flex flex-col w-full h-screen">

@@ -1,12 +1,13 @@
 import { BaseHandle } from "@/components/base-handle";
 import { NodeType } from "@/generated/prisma/enums";
 import { cn } from "@/lib/utils";
-import { Position } from "@xyflow/react";
-import { LucideIcon, SettingsIcon } from "lucide-react";
+import { NodeProps, Position } from "@xyflow/react";
+import { LucideIcon, SettingsIcon, TrashIcon } from "lucide-react";
 import { memo, ReactNode } from "react";
 import NodeDataForm, { nodedataformprops } from "./node-data-dialog";
 import { Button } from "@/components/ui/button";
 import { useWorkflow } from "@/features/workflows/hooks/use-workflows";
+import { useEditor } from "../stores/node-store";
 
 type BaseExecutionNodeProps = {
   className?: string;
@@ -21,12 +22,13 @@ type BaseExecutionNodeProps = {
         form:React.ReactNode,
         onSave:()=>void,
         isSaving?:boolean
-  }
+  },
+  props:NodeProps
 };
 
 export const BaseExecutionNode = memo(
-  ({ className, data, type,form }: BaseExecutionNodeProps) => {
-    
+  ({ className, data,form,props }: BaseExecutionNodeProps) => {
+    const {deleteNode} = useEditor()
     return (
       <div
         className={cn(
@@ -37,15 +39,20 @@ export const BaseExecutionNode = memo(
           className
         )}
       >
-        <NodeDataForm
+     <div className="flex absolute bottom-full left-0 items-center gap-2">
+         <NodeDataForm
         title={form.title}
         description={form.description}
         form={form.form}
         isSaving={form.isSaving}
         onSave={form.onSave}
         >
-          <Button size={"icon"} variant={"link"} className="absolute bottom-full left-1/2 -translate-x-1/2"><SettingsIcon/></Button>
+          <button className=" py-2"><SettingsIcon size={16}/></button>
         </NodeDataForm>
+        <button onClick={()=>{deleteNode(props.id)}} className="text-destructive">
+          <TrashIcon size={14}/>
+        </button>
+     </div>
         {/* LEFT (source) */}
         <BaseHandle id="source" type="source" position={Position.Left} />
 
